@@ -73,7 +73,7 @@ function BudgetForm() {
       type: "income",
       category: "",
       description: "",
-      amount: "0",
+      amount: 0,
       date: new Date(),
     },
   });
