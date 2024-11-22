@@ -139,7 +139,7 @@ function BudgetForm() {
                 <FormItem>
                   <FormLabel>Limit</FormLabel>
                   <FormControl>
-                    <Input placeholder='Yüzde giriniz' {...field} />
+                    <Input placeholder='Limit giriniz' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
