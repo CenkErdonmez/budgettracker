@@ -8,18 +8,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { BarChart, Banknote, TrendingUp, TrendingDown } from "lucide-react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+
 function Cards() {
-  const totalBalance = useSelector(
-    (state: RootState) => state.budget.totalBalance
-  );
-  const totalIncome = useSelector(
-    (state: RootState) => state.budget.totalIncome
-  );
-  const totalExpense = useSelector(
-    (state: RootState) => state.budget.totalExpense
-  );
+  const totalBalance = 0;
+  const totalIncome = 0;
+  const totalExpense = 0;
   const cardElements = [
     {
       title: "Toplam Bütçe",
