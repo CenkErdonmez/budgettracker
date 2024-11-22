@@ -13,7 +13,7 @@ const data = {
   navMain: [
     {
       title: "Ana Sayfa",
-      url: "#",
+      url: "/",
     },
     {
       title: "Building Your Application",
@@ -33,7 +33,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         {data.navMain.map((item) => (
           <SidebarGroup key={item.title}>
-            <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
+            <SidebarGroupLabel>
+              <a href={item.url}>{item.title}</a>
+            </SidebarGroupLabel>
           </SidebarGroup>
         ))}
       </SidebarContent>
