@@ -4,7 +4,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
@@ -16,8 +15,8 @@ const data = {
       url: "/",
     },
     {
-      title: "Building Your Application",
-      url: "#",
+      title: "Gelir / Gider Ekle",
+      url: "/addBudget",
     },
     {
       title: "API Reference",
@@ -29,13 +28,15 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
-      <SidebarHeader>Budget Tracker</SidebarHeader>
+      <SidebarHeader className='text-xl font-bold'>
+        Budget Tracker
+      </SidebarHeader>
       <SidebarContent>
         {data.navMain.map((item) => (
           <SidebarGroup key={item.title}>
-            <SidebarGroupLabel>
-              <a href={item.url}>{item.title}</a>
-            </SidebarGroupLabel>
+            <a className='text-lg' href={item.url}>
+              {item.title}
+            </a>
           </SidebarGroup>
         ))}
       </SidebarContent>

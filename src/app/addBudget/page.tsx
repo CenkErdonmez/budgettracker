@@ -1,3 +1,5 @@
+import React from "react";
+import BudgetForm from "@/components/BudgetForm";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
   SidebarInset,
@@ -5,9 +7,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/ThemeChanger";
-import Cards from "@/components/Cards";
-
-export default function Page() {
+function Budget() {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -16,11 +16,13 @@ export default function Page() {
           <SidebarTrigger className='-ml-1' />
           <ModeToggle />
         </header>
-        <div className='flex flex-1 flex-col gap-4 p-4'>
-          <Cards />
+        <div className='flex flex-col justify-start items-start gap-4 p-4'>
+          <BudgetForm />
         </div>
       </SidebarInset>
     </SidebarProvider>
   );
 }
+
+export default Budget;
 

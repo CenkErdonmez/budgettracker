@@ -1,13 +1,5 @@
 "use client";
 import * as React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
@@ -37,6 +29,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 function BudgetForm() {
   const formSchema = z.object({
     type: z.string({
@@ -81,145 +74,151 @@ function BudgetForm() {
     control: form.control,
     name: "type",
   });
+  const router = useRouter();
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+    const currentBudget = window.localStorage.getItem("budget");
+    if (currentBudget) {
+      let budget = JSON.parse(currentBudget);
+      if (!Array.isArray(budget)) {
+        budget = [budget];
+      }
+      budget.push({ ...values, date: format(values.date, "dd/MM/yyyy") });
+      window.localStorage.setItem("budget", JSON.stringify(budget));
+    } else {
+      window.localStorage.setItem(
+        "budget",
+        JSON.stringify([{ ...values, date: format(values.date, "dd/MM/yyyy") }])
+      );
+    }
+    router.push("/");
     form.reset();
   }
   return (
-    <Dialog>
-      <DialogTrigger className='border-2 rounded-md px-2 border-slate-700 dark:border-slate-400'>
-        Gelir / Gider Ekle
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle className='pb-4'>Gelir / Gider Ekle</DialogTitle>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-              <FormField
-                control={form.control}
-                name='type'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Gelir / Gider</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='Gelir ve ya Gider seçimi yapınız' />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value='income'>Gelir</SelectItem>
-                        <SelectItem value='expense'>Gider</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='category'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Kategori</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Kategori giriniz' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              {typeInput === "expense" && (
-                <FormField
-                  control={form.control}
-                  name='category_limit'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Limit</FormLabel>
-                      <FormControl>
-                        <Input placeholder='Yüzde giriniz' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+    <div className='flex items-center justify-start gap-2 border p-12 m-auto'>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+          <FormField
+            control={form.control}
+            name='type'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Gelir / Gider</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder='Gelir ve ya Gider seçimi yapınız' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value='income'>Gelir</SelectItem>
+                    <SelectItem value='expense'>Gider</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='category'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Kategori</FormLabel>
+                <FormControl>
+                  <Input placeholder='Kategori giriniz' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {typeInput === "expense" && (
+            <FormField
+              control={form.control}
+              name='category_limit'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Limit</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Yüzde giriniz' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-              <FormField
-                control={form.control}
-                name='description'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Açıklama</FormLabel>
+            />
+          )}
+          <FormField
+            control={form.control}
+            name='description'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Açıklama</FormLabel>
+                <FormControl>
+                  <Input placeholder='Açıklama giriniz' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='amount'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tutar</FormLabel>
+                <FormControl>
+                  <Input placeholder='Tutar giriniz' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='date'
+            render={({ field }) => (
+              <FormItem className='flex flex-col'>
+                <FormLabel>Date of birth</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
                     <FormControl>
-                      <Input placeholder='Açıklama giriniz' {...field} />
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-[240px] pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "dd/MM/yyyy")
+                        ) : (
+                          <span>Tarih seçiniz</span>
+                        )}
+                        <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                      </Button>
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='amount'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tutar</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Tutar giriniz' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='date'
-                render={({ field }) => (
-                  <FormItem className='flex flex-col'>
-                    <FormLabel>Date of birth</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "dd/MM/yyyy")
-                            ) : (
-                              <span>Tarih seçiniz</span>
-                            )}
-                            <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className='w-auto p-0' align='start'>
-                        <Calendar
-                          mode='single'
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type='submit'>Submit</Button>
-            </form>
-          </Form>
-          <DialogDescription></DialogDescription>
-        </DialogHeader>
-      </DialogContent>
-    </Dialog>
+                  </PopoverTrigger>
+                  <PopoverContent className='w-auto p-0' align='start'>
+                    <Calendar
+                      mode='single'
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className='flex justify-center gap-2'>
+            <Button type='submit'>Kaydet</Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }
 
