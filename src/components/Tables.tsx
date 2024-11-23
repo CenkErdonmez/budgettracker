@@ -33,28 +33,34 @@ function Tables() {
   }, []);
 
   return (
-    <Tabs className='w-full' defaultValue='income'>
-      <TabsList>
-        <TabsTrigger value='income'>Gelirler</TabsTrigger>
-        <TabsTrigger value='expense'>Giderler</TabsTrigger>
-      </TabsList>
-      {loading ? (
-        <div className='grid auto-rows-min gap-4 md:grid-cols-3'>
-          <Skeleton className='h-10 w-full' />
-          <Skeleton className='h-10 w-full' />
-          <Skeleton className='h-10 w-full' />
-        </div>
+    <>
+      {incomes.length === 0 || expenses.length === 0 ? (
+        <a href='/addBudget'>Lütfen bir gelir veya gider ekleyin.</a>
       ) : (
-        <>
-          <TabsContent className='w-full' value='income'>
-            <IncomeTable data={incomes} />
-          </TabsContent>
-          <TabsContent value='expense'>
-            <ExpenseTable data={expenses} />
-          </TabsContent>
-        </>
+        <Tabs className='w-full' defaultValue='income'>
+          <TabsList>
+            <TabsTrigger value='income'>Gelirler</TabsTrigger>
+            <TabsTrigger value='expense'>Giderler</TabsTrigger>
+          </TabsList>
+          {loading ? (
+            <div className='grid auto-rows-min gap-4 md:grid-cols-3'>
+              <Skeleton className='h-10 w-full' />
+              <Skeleton className='h-10 w-full' />
+              <Skeleton className='h-10 w-full' />
+            </div>
+          ) : (
+            <>
+              <TabsContent className='w-full' value='income'>
+                <IncomeTable data={incomes} />
+              </TabsContent>
+              <TabsContent value='expense'>
+                <ExpenseTable data={expenses} />
+              </TabsContent>
+            </>
+          )}
+        </Tabs>
       )}
-    </Tabs>
+    </>
   );
 }
 
