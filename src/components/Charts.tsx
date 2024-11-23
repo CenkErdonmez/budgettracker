@@ -35,11 +35,17 @@ const chartConfig = {
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
-
+type Grouped = {
+  [key: string]: {
+    income: number;
+    expense: number;
+    [key: string]: number;
+  };
+};
 function groupByMonth(data: BudgetItem[]) {
-  const grouped: Record<string, { income: number; expense: number }> = {};
+  const grouped: Grouped = {};
   data.forEach((item) => {
-    const [day, month, year] = item.date.split("/").map(Number);
+    const [, month, year] = item.date.split("/").map(Number);
     const key = `${year}-${month.toString().padStart(2, "0")}`;
     if (!grouped[key]) {
       grouped[key] = { income: 0, expense: 0 };
@@ -57,7 +63,7 @@ function groupByMonth(data: BudgetItem[]) {
 }
 
 function groupByYear(data: BudgetItem[]) {
-  const grouped: Record<string, { income: number; expense: number }> = {};
+  const grouped: Grouped = {};
   data.forEach((item) => {
     const year = item.date.split("/")[2];
     if (!grouped[year]) {
@@ -94,9 +100,19 @@ function calculatePercentageChange(
 }
 
 export function Charts() {
+  interface MonthlyData {
+    income: number;
+    expense: number;
+    month: string;
+  }
+  interface YearlyData {
+    income: number;
+    expense: number;
+    year: string;
+  }
   const [loading, setLoading] = React.useState(true);
-  const [monthlyData, setMonthlyData] = React.useState([]);
-  const [yearlyData, setYearlyData] = React.useState([]);
+  const [monthlyData, setMonthlyData] = React.useState<MonthlyData[]>([]);
+  const [yearlyData, setYearlyData] = React.useState<YearlyData[]>([]);
   const [monthlyIncomeChange, setMonthlyIncomeChange] = React.useState("N/A");
   const [monthlyExpenseChange, setMonthlyExpenseChange] = React.useState("N/A");
   const [yearlyIncomeChange, setYearlyIncomeChange] = React.useState("N/A");
