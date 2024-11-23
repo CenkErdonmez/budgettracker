@@ -12,7 +12,7 @@ export function ModeToggle() {
   React.useEffect(() => {
     setCurrentTheme(theme || "dark");
     setLoading(false);
-  });
+  }, [theme]);
 
   return (
     <>
