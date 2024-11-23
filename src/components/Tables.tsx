@@ -16,7 +16,7 @@ function Tables() {
 
     if (currentBudget) {
       const budget = JSON.parse(currentBudget);
-
+      console.log(budget);
       setIncomes(
         budget
           .filter((item: { type: string }) => item.type === "income")
@@ -33,34 +33,28 @@ function Tables() {
   }, []);
 
   return (
-    <>
-      {incomes.length === 0 || expenses.length === 0 ? (
-        <a href='/addBudget'>Lütfen bir gelir veya gider ekleyin.</a>
+    <Tabs className='w-full' defaultValue='income'>
+      <TabsList>
+        <TabsTrigger value='income'>Gelirler</TabsTrigger>
+        <TabsTrigger value='expense'>Giderler</TabsTrigger>
+      </TabsList>
+      {loading ? (
+        <div className='grid auto-rows-min gap-4 md:grid-cols-3'>
+          <Skeleton className='h-10 w-full' />
+          <Skeleton className='h-10 w-full' />
+          <Skeleton className='h-10 w-full' />
+        </div>
       ) : (
-        <Tabs className='w-full' defaultValue='income'>
-          <TabsList>
-            <TabsTrigger value='income'>Gelirler</TabsTrigger>
-            <TabsTrigger value='expense'>Giderler</TabsTrigger>
-          </TabsList>
-          {loading ? (
-            <div className='grid auto-rows-min gap-4 md:grid-cols-3'>
-              <Skeleton className='h-10 w-full' />
-              <Skeleton className='h-10 w-full' />
-              <Skeleton className='h-10 w-full' />
-            </div>
-          ) : (
-            <>
-              <TabsContent className='w-full' value='income'>
-                <IncomeTable data={incomes} />
-              </TabsContent>
-              <TabsContent value='expense'>
-                <ExpenseTable data={expenses} />
-              </TabsContent>
-            </>
-          )}
-        </Tabs>
+        <>
+          <TabsContent className='w-full' value='income'>
+            <IncomeTable data={incomes} />
+          </TabsContent>
+          <TabsContent value='expense'>
+            <ExpenseTable data={expenses} />
+          </TabsContent>
+        </>
       )}
-    </>
+    </Tabs>
   );
 }
 

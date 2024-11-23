@@ -23,10 +23,6 @@ function ExpenseTable({ data }: { data: Expense[] }) {
       header: "Kategori",
     },
     {
-      accessorKey: "category_limit",
-      header: "Limit",
-    },
-    {
       accessorKey: "date",
       header: ({ column }) => {
         return (
@@ -49,6 +45,29 @@ function ExpenseTable({ data }: { data: Expense[] }) {
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             Tutar
+            <ArrowUpDown className='ml-2 h-4 w-4' />
+          </Button>
+        );
+      },
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue("amount"));
+        const formatted = new Intl.NumberFormat("tr-TR", {
+          style: "currency",
+          currency: "TRY",
+        }).format(amount);
+
+        return <div className='font-medium'>{formatted}</div>;
+      },
+    },
+    {
+      accessorKey: "category_limit",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant='ghost'
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Limit
             <ArrowUpDown className='ml-2 h-4 w-4' />
           </Button>
         );

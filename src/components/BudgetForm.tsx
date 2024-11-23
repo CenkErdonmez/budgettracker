@@ -31,35 +31,48 @@ import {
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 function BudgetForm() {
-  const formSchema = z.object({
-    type: z.string({
-      required_error: "Seçilmesi zorunlu alandır.",
-    }),
-    category: z.string().trim().min(1, {
-      message: "Girilmesi zorunlu alandır.",
-    }),
-    category_limit: z
-      .string({
-        required_error: "Girilmesi zorunlu alandır.",
-      })
-      .refine((val) => !isNaN(Number(val)), {
-        message: "Sayısal değer olmalıdır.",
-      })
-      .transform((val) => Number(val))
-      .optional(),
-    description: z.string().trim().optional(),
-    amount: z
-      .string({
-        required_error: "Girilmesi zorunlu alandır.",
-      })
-      .refine((val) => !isNaN(Number(val)), {
-        message: "Sayısal değer olmalıdır.",
-      })
-      .transform((val) => Number(val)),
-    date: z.date({
-      required_error: "Seçilmesi zorunlu alandır.",
-    }),
-  });
+  const formSchema = z
+    .object({
+      type: z.string({
+        required_error: "Seçilmesi zorunlu alandır.",
+      }),
+      category: z.string().trim().min(1, {
+        message: "Girilmesi zorunlu alandır.",
+      }),
+      category_limit: z
+        .string({
+          required_error: "Girilmesi zorunlu alandır.",
+        })
+        .refine((val) => !isNaN(Number(val)), {
+          message: "Sayısal değer olmalıdır.",
+        })
+        .transform((val) => Number(val))
+        .optional(),
+      description: z.string().trim().optional(),
+      amount: z
+        .string({
+          required_error: "Girilmesi zorunlu alandır.",
+        })
+        .refine((val) => !isNaN(Number(val)), {
+          message: "Sayısal değer olmalıdır.",
+        })
+        .transform((val) => Number(val)),
+      date: z.date({
+        required_error: "Seçilmesi zorunlu alandır.",
+      }),
+    })
+    .refine(
+      (data) => {
+        if (data.type === "expense" && data.category_limit !== undefined) {
+          return data.amount <= data.category_limit;
+        }
+        return true;
+      },
+      {
+        message: "Tutar, kategori limitini aşamaz.",
+        path: ["amount"],
+      }
+    );
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -94,9 +107,12 @@ function BudgetForm() {
     form.reset();
   }
   return (
-    <div className='flex items-center justify-start gap-2 border p-12 m-auto'>
+    <div className='flex items-center justify-start gap-2 border p-12 w-full'>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className='space-y-4 flex flex-col flex-wrap'
+        >
           <FormField
             control={form.control}
             name='type'
@@ -131,21 +147,7 @@ function BudgetForm() {
               </FormItem>
             )}
           />
-          {typeInput === "expense" && (
-            <FormField
-              control={form.control}
-              name='category_limit'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Limit</FormLabel>
-                  <FormControl>
-                    <Input placeholder='Limit giriniz' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
+
           <FormField
             control={form.control}
             name='description'
@@ -172,6 +174,21 @@ function BudgetForm() {
               </FormItem>
             )}
           />
+          {typeInput === "expense" && (
+            <FormField
+              control={form.control}
+              name='category_limit'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Limit</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Limit giriniz' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           <FormField
             control={form.control}
             name='date'
