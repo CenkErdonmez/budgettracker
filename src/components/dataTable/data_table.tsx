@@ -19,7 +19,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import { Button } from "../ui/button";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -46,14 +48,59 @@ export function DataTable<TData, TValue>({
       columnFilters,
     },
   });
+  const exportToPDF = () => {
+    const doc: jsPDF = new jsPDF();
+    const rows = table.getRowModel().rows.map((row) =>
+      row.getVisibleCells().map((cell) => {
+        const value = cell.getValue();
+        return typeof value === "string" || typeof value === "number"
+          ? value
+          : JSON.stringify(value);
+      })
+    );
+    const headers = table
+      .getAllColumns()
+      .filter((column) => column.getIsVisible())
+      .map((column) => {
+        const header = column.columnDef.header;
+        return typeof header === "string"
+          ? header
+          : (column.columnDef as { accessorKey: string }).accessorKey ||
+              column.id;
+      });
+    doc.setFontSize(14);
+    doc.text("Exported Data", 14, 10);
+    (doc as any).autoTable({
+      head: [headers],
+      body: rows,
+      startY: 20,
+      theme: "striped",
+      styles: {
+        fontSize: 8,
+        cellPadding: 2,
+        overflow: "linebreak",
+        fillColor: [255, 255, 255],
+        textColor: [0, 0, 0],
+        halign: "left",
+      },
+      headStyles: {
+        fontStyle: "bold",
+        fillColor: [22, 160, 133],
+        textColor: [255, 255, 255],
+      },
+      alternateRowStyles: {
+        fillColor: [240, 240, 240],
+      },
+    });
 
+    doc.save(`${new Date()}tablo.pdf.pdf`);
+  };
   return (
     <>
-      <div>
+      <div className='flex items-center justify-between space-x-2 py-4'>
         <div className='flex items-center py-4'>
           <Input
             placeholder='Kategori ara...'
-            disabled={table.getColumn("category")?.getCanFilter() === false}
             value={
               (table.getColumn("category")?.getFilterValue() as string) ?? ""
             }
@@ -62,6 +109,9 @@ export function DataTable<TData, TValue>({
             }
             className='max-w-sm'
           />
+        </div>
+        <div>
+          <Button onClick={exportToPDF}>Dışa Aktar</Button>
         </div>
       </div>
       <div className='rounded-md border'>

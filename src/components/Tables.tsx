@@ -31,7 +31,6 @@ function Tables() {
 
     setLoading(false);
   }, []);
-  console.log(incomes, expenses);
 
   return (
     <Tabs className='w-full' defaultValue='income'>
