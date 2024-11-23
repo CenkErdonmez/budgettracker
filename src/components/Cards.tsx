@@ -62,7 +62,7 @@ function Cards() {
   ];
 
   return (
-    <div className='grid auto-rows-min gap-4 md:grid-cols-3'>
+    <div className='grid auto-rows-min gap-4 md:grid-cols-3 '>
       {loading ? (
         <div className='grid auto-rows-min gap-4 md:grid-cols-3'>
           <Skeleton className='h-10 w-full' />
