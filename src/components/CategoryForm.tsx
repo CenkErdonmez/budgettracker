@@ -4,7 +4,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -88,7 +87,7 @@ function CategoryForm() {
     if (categories) {
       const parsedCategories = JSON.parse(categories);
       const isDuplicate = parsedCategories.some(
-        (category: any) =>
+        (category: { type: string; category: string }) =>
           category.type === values.type && category.category === values.category
       );
       if (isDuplicate) {
@@ -110,68 +109,66 @@ function CategoryForm() {
     }, 1000);
   }
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Kategori Ekle</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-            <FormField
-              control={form.control}
-              name='type'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Gelir / Gider Seç</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder='Gelir ve ya Gider seçimi yapınız' />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value='income'>Gelir</SelectItem>
-                      <SelectItem value='expense'>Gider</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='category'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Kategori Adı</FormLabel>
+    <div>
+      <div className='mb-4'>
+        <h3 className='text-lg font-semibold'>Kategori Ekle</h3>
+      </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+          <FormField
+            control={form.control}
+            name='type'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Gelir / Gider Seç</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
-                    <Input placeholder='Kategori giriniz' {...field} />
+                    <SelectTrigger>
+                      <SelectValue placeholder='Gelir ve ya Gider seçimi yapınız' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value='income'>Gelir</SelectItem>
+                    <SelectItem value='expense'>Gider</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='category'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Kategori Adı</FormLabel>
+                <FormControl>
+                  <Input placeholder='Kategori giriniz' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {typeInput === "expense" && (
+            <FormField
+              control={form.control}
+              name='category_limit'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Limit</FormLabel>
+                  <FormControl>
+                    <Input placeholder='Limit giriniz' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {typeInput === "expense" && (
-              <FormField
-                control={form.control}
-                name='category_limit'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Limit</FormLabel>
-                    <FormControl>
-                      <Input placeholder='Limit giriniz' {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+          )}
 
-            <Button type='submit'>Ekle</Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+          <Button type='submit'>Ekle</Button>
+        </form>
+      </Form>
+    </div>
   );
 }
 

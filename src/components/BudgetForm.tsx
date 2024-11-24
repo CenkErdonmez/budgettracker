@@ -32,6 +32,8 @@ import {
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import CategoryForm from "./CategoryForm";
 
 interface CategoryItem {
   type: string;
@@ -232,6 +234,12 @@ function BudgetForm() {
     }
   }, [typeInput, categoryInput]);
 
+  React.useEffect(() => {
+    if (typeInput) {
+      form.setValue("category", "");
+    }
+  }, [typeInput, form]);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     const newItem: BudgetItem = {
       id: generateId(),
@@ -284,7 +292,17 @@ function BudgetForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Gelir / Gider Ekle</CardTitle>
+        <div className='flex justify-between items-center'>
+          <CardTitle>Gelir / Gider Ekle</CardTitle>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant='outline'>Kategori Ekle</Button>
+            </DialogTrigger>
+            <DialogContent className='sm:max-w-[425px]'>
+              <CategoryForm />
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardHeader>
       <CardContent>
         <Form {...form}>
