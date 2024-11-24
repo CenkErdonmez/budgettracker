@@ -29,10 +29,10 @@ Kişisel gelir ve giderlerinizi kolayca takip edebileceğiniz, kategori bazlı l
 5. Raporlar sayfasından detaylı analizlere ulaşabilirsiniz
 
 ## Proje Yapısı
-
+```
 src/
 ├── app/ # Sayfa bileşenleri
 ├── components/ # Yeniden kullanılabilir bileşenler
 ├── lib/ # Yardımcı fonksiyonlar
 └── store/ # Redux store yapılandırması
-
+```
