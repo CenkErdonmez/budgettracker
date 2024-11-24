@@ -8,6 +8,7 @@ import { ModeToggle } from "@/components/ThemeChanger";
 import Cards from "@/components/Cards";
 import Tables from "@/components/Tables";
 import { Separator } from "@/components/ui/separator";
+import { Suspense } from "react";
 
 export default function Page() {
   return (
@@ -22,7 +23,9 @@ export default function Page() {
           <Cards />
           <div className='flex w-full flex-col justify-start items-start gap-4 p-4'>
             <Separator />
-            <Tables />
+            <Suspense fallback={<div>Loading...</div>}>
+              <Tables />
+            </Suspense>
           </div>
         </div>
       </SidebarInset>
