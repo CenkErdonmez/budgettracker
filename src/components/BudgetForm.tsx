@@ -345,18 +345,31 @@ function BudgetForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {typeInput === "income"
-                        ? incomeOptions.map((option) => (
+                      {typeInput === "income" ? (
+                        incomeOptions.length > 0 ? (
+                          incomeOptions.map((option) => (
                             <SelectItem key={option} value={option}>
                               {option}
                             </SelectItem>
                           ))
-                        : typeInput === "expense" &&
+                        ) : (
+                          <SelectItem value='no-categories' disabled>
+                            Henüz gelir kategorisi oluşturulmamış
+                          </SelectItem>
+                        )
+                      ) : typeInput === "expense" ? (
+                        expenseOptions.length > 0 ? (
                           expenseOptions.map((option) => (
                             <SelectItem key={option} value={option}>
                               {option}
                             </SelectItem>
-                          ))}
+                          ))
+                        ) : (
+                          <SelectItem value='no-categories' disabled>
+                            Henüz gider kategorisi oluşturulmamış
+                          </SelectItem>
+                        )
+                      ) : null}
                     </SelectContent>
                   </Select>
                   <FormMessage />
