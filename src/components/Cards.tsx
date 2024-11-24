@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -9,11 +9,20 @@ import {
 } from "@/components/ui/card";
 import { BarChart, Banknote, TrendingUp, TrendingDown } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/app/store/store";
+import {
+  setTotalBalance,
+  setTotalIncome,
+  setTotalExpense,
+  setLoading,
+} from "@/app/store/budgetSlice";
+
 function Cards() {
-  const [totalBalance, setTotalBalance] = useState(0);
-  const [totalIncome, setTotalIncome] = useState(0);
-  const [totalExpense, setTotalExpense] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { totalBalance, totalIncome, totalExpense, loading } = useSelector(
+    (state: RootState) => state.budget
+  );
 
   useEffect(() => {
     const currentBudget = window.localStorage.getItem("budget");
@@ -33,13 +42,14 @@ function Cards() {
           0
         );
       const balance = income - expense;
-      setTotalBalance(balance);
-      setTotalIncome(income);
-      setTotalExpense(expense);
+      dispatch(setTotalBalance(balance));
+      dispatch(setTotalIncome(income));
+      dispatch(setTotalExpense(expense));
     }
 
-    setLoading(false);
-  }, []);
+    dispatch(setLoading(false));
+  }, [dispatch]);
+
   const cardElements = [
     {
       title: "Toplam Bütçe",

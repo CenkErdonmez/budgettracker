@@ -19,9 +19,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
 import { Button } from "../ui/button";
+import { PDFDocument, rgb } from "pdf-lib";
+import { saveAs } from "file-saver";
+import fontkit from "@pdf-lib/fontkit";
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -48,53 +50,141 @@ export function DataTable<TData, TValue>({
       columnFilters,
     },
   });
-  const exportToPDF = () => {
-    const doc: jsPDF = new jsPDF();
-    const rows = table.getRowModel().rows.map((row) =>
-      row.getVisibleCells().map((cell) => {
-        const value = cell.getValue();
-        return typeof value === "string" || typeof value === "number"
-          ? value
-          : JSON.stringify(value);
-      })
-    );
+  const exportToPDF = async () => {
+    const pdfDoc = await PDFDocument.create();
+    pdfDoc.registerFontkit(fontkit);
+    let page = pdfDoc.addPage([595.28, 841.89]);
+    const { width, height } = page.getSize();
+
+    const fontUrl =
+      "https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Me5Q.ttf";
+    const fontBytes = await fetch(fontUrl).then((res) => res.arrayBuffer());
+    const customFont = await pdfDoc.embedFont(fontBytes);
+
+    const fontSize = 10;
+    const margin = 50;
+    const cellPadding = 5;
+    let y = height - 50;
+
+    page.drawText("Bütçe Listesi", {
+      x: margin,
+      y,
+      size: 14,
+      font: customFont,
+      color: rgb(0.1, 0.6, 0.5),
+    });
+    y -= 30;
+
     const headers = table
       .getAllColumns()
       .filter((column) => column.getIsVisible())
       .map((column) => {
+        const accessorKey = (column.columnDef as { accessorKey: string })
+          .accessorKey;
+        if (accessorKey === "date") return "Tarih";
+        if (accessorKey === "amount") return "Tutar";
         const header = column.columnDef.header;
-        return typeof header === "string"
-          ? header
-          : (column.columnDef as { accessorKey: string }).accessorKey ||
-              column.id;
+        return typeof header === "string" ? header : accessorKey || column.id;
       });
-    doc.setFontSize(14);
-    doc.text("Exported Data", 14, 10);
-    (doc as any).autoTable({
-      head: [headers],
-      body: rows,
-      startY: 20,
-      theme: "striped",
-      styles: {
-        fontSize: 8,
-        cellPadding: 2,
-        overflow: "linebreak",
-        fillColor: [255, 255, 255],
-        textColor: [0, 0, 0],
-        halign: "left",
-      },
-      headStyles: {
-        fontStyle: "bold",
-        fillColor: [22, 160, 133],
-        textColor: [255, 255, 255],
-      },
-      alternateRowStyles: {
-        fillColor: [240, 240, 240],
-      },
-    });
 
-    doc.save(`${new Date()}tablo.pdf.pdf`);
+    const cellWidth = (width - 2 * margin) / headers.length;
+    const cellHeight = fontSize + 2 * cellPadding;
+
+    const fitTextInCell = (text: string, maxWidth: number) => {
+      const textWidth = customFont.widthOfTextAtSize(text, fontSize);
+      if (textWidth <= maxWidth - 2 * cellPadding) {
+        return text;
+      }
+      const ellipsis = "...";
+      let truncated = text;
+      while (
+        customFont.widthOfTextAtSize(truncated + ellipsis, fontSize) >
+        maxWidth - 2 * cellPadding
+      ) {
+        truncated = truncated.slice(0, -1);
+      }
+      return truncated + ellipsis;
+    };
+
+    const centerTextInCell = (
+      text: string,
+      cellX: number,
+      textWidth: number
+    ) => {
+      return cellX + (cellWidth - textWidth) / 2;
+    };
+
+    headers.forEach((header, index) => {
+      const x = margin + index * cellWidth;
+      page.drawRectangle({
+        x,
+        y: y - cellHeight,
+        width: cellWidth,
+        height: cellHeight,
+        borderColor: rgb(0, 0, 0),
+        borderWidth: 1,
+      });
+
+      const fittedText = fitTextInCell(header, cellWidth);
+      const textWidth = customFont.widthOfTextAtSize(fittedText, fontSize);
+      const textX = centerTextInCell(fittedText, x, textWidth);
+
+      page.drawText(fittedText, {
+        x: textX,
+        y: y - fontSize - cellPadding,
+        size: fontSize,
+        font: customFont,
+        color: rgb(0, 0, 0),
+      });
+    });
+    y -= cellHeight;
+
+    // Rows
+    const rows = table.getRowModel().rows.map((row) =>
+      row.getVisibleCells().map((cell) => {
+        const value = cell.getValue();
+        return typeof value === "string" || typeof value === "number"
+          ? value.toString()
+          : JSON.stringify(value);
+      })
+    );
+
+    for (const row of rows) {
+      row.forEach((cell, index) => {
+        const x = margin + index * cellWidth;
+        page.drawRectangle({
+          x,
+          y: y - cellHeight,
+          width: cellWidth,
+          height: cellHeight,
+          borderColor: rgb(0, 0, 0),
+          borderWidth: 1,
+        });
+
+        const fittedText = fitTextInCell(cell, cellWidth);
+        const textWidth = customFont.widthOfTextAtSize(fittedText, fontSize);
+        const textX = centerTextInCell(fittedText, x, textWidth);
+
+        page.drawText(fittedText, {
+          x: textX,
+          y: y - fontSize - cellPadding,
+          size: fontSize,
+          font: customFont,
+          color: rgb(0, 0, 0),
+        });
+      });
+      y -= cellHeight;
+      if (y < margin) {
+        y = height - margin;
+        page = pdfDoc.addPage([595.28, 841.89]);
+      }
+    }
+
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    saveAs(blob, "Bütçe_listesi.pdf");
   };
+
   return (
     <>
       <div className='flex items-center justify-between space-x-2 py-4'>

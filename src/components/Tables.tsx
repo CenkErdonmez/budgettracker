@@ -6,10 +6,13 @@ import IncomeTable from "./dataTable/IncomeTable";
 import { Income } from "./dataTable/IncomeTable";
 import ExpenseTable from "./dataTable/ExpenseTable";
 import { Expense } from "./dataTable/ExpenseTable";
+import { useSearchParams } from "next/navigation";
 function Tables() {
   const [loading, setLoading] = React.useState(true);
   const [incomes, setIncomes] = React.useState([]);
   const [expenses, setExpenses] = React.useState([]);
+  const searchParams = useSearchParams();
+  const defaultType = searchParams.get("type");
 
   React.useEffect(() => {
     const currentBudget = window.localStorage.getItem("budget");
@@ -32,7 +35,7 @@ function Tables() {
   }, []);
 
   return (
-    <Tabs className='w-full' defaultValue='income'>
+    <Tabs className='w-full' defaultValue={defaultType || "income"}>
       <TabsList>
         <TabsTrigger value='income'>Gelirler</TabsTrigger>
         <TabsTrigger value='expense'>Giderler</TabsTrigger>

@@ -1,5 +1,4 @@
 import * as React from "react";
-import { ArrowBigLeft } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -28,13 +27,13 @@ const data = {
   ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar() {
   return (
     <Sidebar>
-      <SidebarHeader className='text-lg md:text-xl h-16 font-bold border-b'>
+      <SidebarHeader className='text-lg md:text-xl flex items-center justify-center h-16 font-bold border-b'>
         <p className='p-2'>Bütçe Takip Uyguluması</p>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className='p-2'>
         {data.navMain.map((item) => (
           <SidebarGroup key={item.title}>
             <a

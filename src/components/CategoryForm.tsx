@@ -107,7 +107,7 @@ function CategoryForm() {
     form.reset();
     setTimeout(() => {
       window.location.reload();
-    }, 100);
+    }, 1000);
   }
   return (
     <Card>

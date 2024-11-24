@@ -120,7 +120,6 @@ function BudgetForm() {
   const [incomeOptions, setIncomeOptions] = React.useState<string[]>([]);
   const [expenseOptions, setExpenseOptions] = React.useState<string[]>([]);
   const [limitWarning, setLimitWarning] = React.useState<string>("");
-  const [loading, setLoading] = React.useState(true);
   const [currentCategoryTotal, setCurrentCategoryTotal] =
     React.useState<CategoryTotal | null>(null);
 
@@ -172,16 +171,18 @@ function BudgetForm() {
         if (newTotal > categoryTotal.limit) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: `Kategori limitini aşıyor. Kalan: ${categoryTotal.remaining}`,
+            message: `Kategori limitini aşıyor. Kalan: ${formatCurrency(
+              categoryTotal.remaining
+            )}`,
             path: ["amount"],
           });
         } else {
           const remainingAfterTransaction = categoryTotal.limit - newTotal;
           const percentageAfter = (newTotal / categoryTotal.limit) * 100;
-
+          const formatedRemaining = formatCurrency(remainingAfterTransaction);
           if (percentageAfter > 80) {
             setLimitWarning(
-              `Uyarı: İşlemden sonra ${remainingAfterTransaction} limit kalacak (limitin %${(
+              `Uyarı: İşlemden sonra ${formatedRemaining} limit kalacak (limitin %${(
                 100 - percentageAfter
               ).toFixed(1)})`
             );
@@ -250,7 +251,7 @@ function BudgetForm() {
     }
 
     toast.success("İşlem başarıyla kaydedildi");
-    router.push("/");
+    router.push("/" + "?" + new URLSearchParams({ type: typeInput }));
     form.reset();
   }
 
@@ -272,9 +273,14 @@ function BudgetForm() {
       setIncomeOptions(Array.from(incomeSet));
       setExpenseOptions(Array.from(expenseSet));
     }
-    setLoading(false);
   }, []);
-
+  const formatCurrency = (value: number) => {
+    const newValue = new Intl.NumberFormat("tr-TR", {
+      style: "currency",
+      currency: "TRY",
+    }).format(value);
+    return newValue;
+  };
   return (
     <Card>
       <CardHeader>
@@ -327,7 +333,8 @@ function BudgetForm() {
                               {option}
                             </SelectItem>
                           ))
-                        : expenseOptions.map((option) => (
+                        : typeInput === "expense" &&
+                          expenseOptions.map((option) => (
                             <SelectItem key={option} value={option}>
                               {option}
                             </SelectItem>
@@ -412,14 +419,14 @@ function BudgetForm() {
             {currentCategoryTotal && (
               <div className='text-sm space-y-1'>
                 <div className='text-muted-foreground'>
-                  Kategori Limiti: {currentCategoryTotal.limit}
+                  Kategori Limiti: {formatCurrency(currentCategoryTotal.limit)}
                 </div>
                 <div className='text-muted-foreground'>
-                  Harcanan: {currentCategoryTotal.spent} (
+                  Harcanan: {formatCurrency(currentCategoryTotal.spent)} (
                   {currentCategoryTotal.percentageUsed.toFixed(1)}%)
                 </div>
                 <div className='font-medium'>
-                  Kalan: {currentCategoryTotal.remaining}
+                  Kalan: {formatCurrency(currentCategoryTotal.remaining)}
                 </div>
               </div>
             )}
