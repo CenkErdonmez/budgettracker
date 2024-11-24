@@ -7,6 +7,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/ThemeChanger";
+import CategoryForm from "@/components/CategoryForm";
 function Budget() {
   return (
     <SidebarProvider>
@@ -16,7 +17,8 @@ function Budget() {
           <SidebarTrigger className='-ml-1' />
           <ModeToggle />
         </header>
-        <div className='flex flex-col justify-start items-start gap-4 p-4'>
+        <div className='grid gap-6 md:grid-cols-2 p-2 bg:background'>
+          <CategoryForm />
           <BudgetForm />
         </div>
       </SidebarInset>

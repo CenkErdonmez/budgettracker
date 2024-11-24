@@ -7,7 +7,8 @@ import {
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "@/components/ThemeChanger";
 import { Charts } from "@/components/Charts";
-function Reports() {
+import DonutCharts from "@/components/DonutCharts";
+function Analysis() {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -16,13 +17,14 @@ function Reports() {
           <SidebarTrigger className='-ml-1' />
           <ModeToggle />
         </header>
-        <div className='flex w-full flex-col justify-start items-start gap-4 p-4'>
+        <div className='grid gap-2 md:grid-cols-2 p-2 md:p-8 bg:background'>
           <Charts />
+          <DonutCharts />
         </div>
       </SidebarInset>
     </SidebarProvider>
   );
 }
 
-export default Reports;
+export default Analysis;
 

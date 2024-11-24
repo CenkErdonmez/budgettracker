@@ -16,7 +16,6 @@ function Tables() {
 
     if (currentBudget) {
       const budget = JSON.parse(currentBudget);
-      console.log(budget);
       setIncomes(
         budget
           .filter((item: { type: string }) => item.type === "income")

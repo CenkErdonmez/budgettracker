@@ -20,21 +20,19 @@ function Cards() {
 
     if (currentBudget) {
       const budget = JSON.parse(currentBudget);
-
       const income = budget
         .filter((item: { type: string }) => item.type === "income")
         .reduce(
-          (acc: number, item: { amount: number }) => acc + item.amount,
+          (acc: number, item: { amount: number }) => acc + Number(item.amount),
           0
         );
       const expense = budget
         .filter((item: { type: string }) => item.type === "expense")
         .reduce(
-          (acc: number, item: { amount: number }) => acc + item.amount,
+          (acc: number, item: { amount: number }) => acc + Number(item.amount),
           0
         );
       const balance = income - expense;
-
       setTotalBalance(balance);
       setTotalIncome(income);
       setTotalExpense(expense);
@@ -42,7 +40,6 @@ function Cards() {
 
     setLoading(false);
   }, []);
-
   const cardElements = [
     {
       title: "Toplam Bütçe",

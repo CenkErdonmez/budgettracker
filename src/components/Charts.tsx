@@ -50,7 +50,7 @@ function groupByMonth(data: BudgetItem[]) {
     if (!grouped[key]) {
       grouped[key] = { income: 0, expense: 0 };
     }
-    grouped[key][item.type] += item.amount;
+    grouped[key][item.type] += Number(item.amount);
   });
   return Object.entries(grouped)
     .sort(
@@ -69,7 +69,7 @@ function groupByYear(data: BudgetItem[]) {
     if (!grouped[year]) {
       grouped[year] = { income: 0, expense: 0 };
     }
-    grouped[year][item.type] += item.amount;
+    grouped[year][item.type] += Number(item.amount);
   });
   return Object.entries(grouped)
     .sort(([keyA], [keyB]) => parseInt(keyA, 10) - parseInt(keyB, 10))
@@ -134,10 +134,16 @@ export function Charts() {
         const lastMonth = monthly[monthly.length - 1];
         const previousMonth = monthly[monthly.length - 2];
         setMonthlyIncomeChange(
-          calculatePercentageChange(lastMonth.income, previousMonth.income)
+          calculatePercentageChange(
+            Number(lastMonth.income),
+            Number(previousMonth.income)
+          )
         );
         setMonthlyExpenseChange(
-          calculatePercentageChange(lastMonth.expense, previousMonth.expense)
+          calculatePercentageChange(
+            Number(lastMonth.expense),
+            Number(previousMonth.expense)
+          )
         );
       }
 
@@ -145,10 +151,16 @@ export function Charts() {
         const lastYear = yearly[yearly.length - 1];
         const previousYear = yearly[yearly.length - 2];
         setYearlyIncomeChange(
-          calculatePercentageChange(lastYear.income, previousYear.income)
+          calculatePercentageChange(
+            Number(lastYear.income),
+            Number(previousYear.income)
+          )
         );
         setYearlyExpenseChange(
-          calculatePercentageChange(lastYear.expense, previousYear.expense)
+          calculatePercentageChange(
+            Number(lastYear.expense),
+            Number(previousYear.expense)
+          )
         );
       }
     }
@@ -160,7 +172,8 @@ export function Charts() {
     return <div>Loading...</div>;
   }
   return (
-    <div className='flex w-full flex-wrap gap-4'>
+    <div className='flex w-full flex-wrap gap-4 border p-2'>
+      <h2>Bütçe Grafikleri</h2>
       <Tabs className='w-full' defaultValue='monthly'>
         <TabsList>
           <TabsTrigger value='monthly'>Aylık Grafik</TabsTrigger>
@@ -175,7 +188,7 @@ export function Charts() {
         ) : (
           <div className='w-full'>
             <TabsContent className='w-full' value='monthly'>
-              <Card className='w-full md:w-1/2'>
+              <Card className='w-full border-0'>
                 <CardHeader>
                   <CardTitle>Aylık Gelir-Gider Grafiği</CardTitle>
                 </CardHeader>
@@ -252,7 +265,7 @@ export function Charts() {
               </Card>
             </TabsContent>
             <TabsContent value='yearly'>
-              <Card className='w-full md:w-1/2'>
+              <Card className='w-full border-0'>
                 <CardHeader>
                   <CardTitle>Yıllık Gelir-Gider Grafiği</CardTitle>
                 </CardHeader>
