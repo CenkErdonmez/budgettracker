@@ -21,7 +21,7 @@ function Budget() {
           </div>
           <ModeToggle />
         </header>
-        <div className='p-2 bg:background'>
+        <div className=' p-4'>
           <BudgetForm />
         </div>
       </SidebarInset>

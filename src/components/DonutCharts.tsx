@@ -1,21 +1,13 @@
 "use client";
 import React from "react";
-import { TrendingUp } from "lucide-react";
 import { Label, Pie, PieChart } from "recharts";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart";
 import {
   Select,
@@ -134,9 +126,12 @@ const ExpensePieChart: React.FC = () => {
     }).format(amount);
   };
 
+  const hasData = chartData.length > 0;
+
   return (
-    <div className='flex w-full flex-col gap-4 border p-2'>
+    <div className='flex w-full flex-col gap-4 border rounded-md p-2'>
       <h2 className='text-xl font-bold'>Giderler Analizi</h2>
+      <Separator />
       <Select onValueChange={setSelectedCategory} value={selectedCategory}>
         <SelectTrigger className='w-full'>
           <SelectValue placeholder='Select a category' />
@@ -150,7 +145,7 @@ const ExpensePieChart: React.FC = () => {
           ))}
         </SelectContent>
       </Select>
-      <Card className='flex flex-col border-0'>
+      <Card className='flex flex-col  border-0'>
         <CardHeader className='items-center pb-0'>
           <CardTitle>
             {selectedCategory === "all"
@@ -158,52 +153,58 @@ const ExpensePieChart: React.FC = () => {
               : `${selectedCategory}'ın Limit Kullanımı Oranı`}
           </CardTitle>
         </CardHeader>
-        <CardContent className='flex-1 pb-0'>
-          <ChartContainer
-            config={chartConfig}
-            className='mx-auto aspect-square max-h-[250px]'
-          >
-            <PieChart>
-              <ChartTooltip />
-              <Pie
-                data={chartData}
-                dataKey='value'
-                nameKey='name'
-                innerRadius={60}
-                strokeWidth={5}
-              >
-                <Label
-                  content={({ viewBox }) => {
-                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                      return (
-                        <text
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          textAnchor='middle'
-                          dominantBaseline='middle'
-                        >
-                          <tspan
+        <CardContent className='flex-1 pb-0 '>
+          {!hasData ? (
+            <div className='flex h-[250px] items-center justify-center text-muted-foreground'>
+              Henüz hiç gider verisi bulunmamaktadır.
+            </div>
+          ) : (
+            <ChartContainer
+              config={chartConfig}
+              className='mx-auto aspect-square max-h-[250px]'
+            >
+              <PieChart>
+                <ChartTooltip />
+                <Pie
+                  data={chartData}
+                  dataKey='value'
+                  nameKey='name'
+                  innerRadius={60}
+                  strokeWidth={5}
+                >
+                  <Label
+                    content={({ viewBox }) => {
+                      if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                        return (
+                          <text
                             x={viewBox.cx}
                             y={viewBox.cy}
-                            className='fill-foreground text-3xl font-bold'
+                            textAnchor='middle'
+                            dominantBaseline='middle'
                           >
-                            {formatAmount(totalAmount)}
-                          </tspan>
-                          <tspan
-                            x={viewBox.cx}
-                            y={(viewBox.cy || 0) + 24}
-                            className='fill-muted-foreground'
-                          >
-                            Toplam
-                          </tspan>
-                        </text>
-                      );
-                    }
-                  }}
-                />
-              </Pie>
-            </PieChart>
-          </ChartContainer>
+                            <tspan
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              className='fill-foreground text-3xl font-bold'
+                            >
+                              {formatAmount(totalAmount)}
+                            </tspan>
+                            <tspan
+                              x={viewBox.cx}
+                              y={(viewBox.cy || 0) + 24}
+                              className='fill-muted-foreground'
+                            >
+                              Toplam
+                            </tspan>
+                          </text>
+                        );
+                      }
+                    }}
+                  />
+                </Pie>
+              </PieChart>
+            </ChartContainer>
+          )}
         </CardContent>
       </Card>
     </div>

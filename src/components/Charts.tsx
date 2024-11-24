@@ -16,7 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
 type BudgetItem = {
   type: string;
   category: string;
@@ -168,31 +168,33 @@ export function Charts() {
     setLoading(false);
   }, []);
 
+  const hasData = monthlyData.length > 0 || yearlyData.length > 0;
+
   if (loading) {
     return <div>Loading...</div>;
   }
+
   return (
-    <div className='flex w-full flex-wrap gap-4 border p-2'>
-      <h2>Bütçe Grafikleri</h2>
+    <div className='flex w-full flex-wrap gap-4 border rounded-md p-2'>
+      <h2 className='text-xl font-bold'>Bütçe Grafikleri</h2>
+      <Separator />
       <Tabs className='w-full' defaultValue='monthly'>
         <TabsList>
           <TabsTrigger value='monthly'>Aylık Grafik</TabsTrigger>
           <TabsTrigger value='yearly'>Yıllık Grafik</TabsTrigger>
         </TabsList>
-        {loading ? (
-          <div className='grid auto-rows-min gap-4 md:grid-cols-3'>
-            <Skeleton className='h-10 w-full' />
-            <Skeleton className='h-10 w-full' />
-            <Skeleton className='h-10 w-full' />
-          </div>
-        ) : (
-          <div className='w-full'>
-            <TabsContent className='w-full' value='monthly'>
-              <Card className='w-full border-0'>
-                <CardHeader>
-                  <CardTitle>Aylık Gelir-Gider Grafiği</CardTitle>
-                </CardHeader>
-                <CardContent>
+        <div className='w-full'>
+          <TabsContent className='w-full' value='monthly'>
+            <Card className='w-full border-0'>
+              <CardHeader>
+                <CardTitle>Aylık Gelir-Gider Grafiği</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {!hasData ? (
+                  <div className='flex h-[300px] items-center justify-center text-muted-foreground'>
+                    Henüz hiç bütçe verisi bulunmamaktadır.
+                  </div>
+                ) : (
                   <ChartContainer config={chartConfig}>
                     <BarChart data={monthlyData}>
                       <CartesianGrid vertical={false} />
@@ -218,58 +220,65 @@ export function Charts() {
                       />
                     </BarChart>
                   </ChartContainer>
-                </CardContent>
-                <CardFooter className='flex-col items-start gap-2 text-sm'>
-                  <div className='flex flex-col gap-1'>
-                    <div className='flex gap-2 font-medium leading-none'>
-                      Gelirler:{" "}
-                      {monthlyIncomeChange === "N/A" ? (
-                        <span>Karşılaştırma yapılacak veri yok.</span>
-                      ) : monthlyIncomeChange === "No data" ? (
-                        <span>{monthlyIncomeChange}</span>
-                      ) : monthlyIncomeChange.startsWith("-") ? (
-                        <>
-                          Gelirleriniz {monthlyIncomeChange} azaldı.{" "}
-                          <TrendingDown className='h-4 w-4' />
-                        </>
-                      ) : (
-                        <>
-                          Gelirleriniz {monthlyIncomeChange} arttı.{" "}
-                          <TrendingUp className='h-4 w-4' />
-                        </>
-                      )}
-                    </div>
-                    <div className='flex gap-2 font-medium leading-none'>
-                      Gider:{" "}
-                      {monthlyExpenseChange === "N/A" ? (
-                        <span>Karşılaştırma yapılacak veri yok.</span>
-                      ) : monthlyExpenseChange === "No data" ? (
-                        <span>{monthlyExpenseChange}</span>
-                      ) : monthlyExpenseChange.startsWith("-") ? (
-                        <>
-                          Giderleriniz {monthlyExpenseChange} azaldı.{" "}
-                          <TrendingDown className='h-4 w-4' />
-                        </>
-                      ) : (
-                        <>
-                          Giderleriniz {monthlyExpenseChange} arttı.{" "}
-                          <TrendingUp className='h-4 w-4' />
-                        </>
-                      )}
-                    </div>
+                )}
+              </CardContent>
+              <CardFooter className='flex-col items-start gap-2 text-sm'>
+                <div className='flex flex-col gap-1'>
+                  <div className='flex gap-2 font-medium leading-none'>
+                    Gelirler:{" "}
+                    {monthlyIncomeChange === "N/A" ? (
+                      <span>Karşılaştırma yapılacak veri yok.</span>
+                    ) : monthlyIncomeChange === "No data" ? (
+                      <span>{monthlyIncomeChange}</span>
+                    ) : monthlyIncomeChange.startsWith("-") ? (
+                      <>
+                        Gelirleriniz {monthlyIncomeChange} azaldı.{" "}
+                        <TrendingDown className='h-4 w-4' />
+                      </>
+                    ) : (
+                      <>
+                        Gelirleriniz {monthlyIncomeChange} arttı.{" "}
+                        <TrendingUp className='h-4 w-4' />
+                      </>
+                    )}
                   </div>
-                  <div className='leading-none text-muted-foreground'>
-                    Aylık gelirler ve giderlerini görebilirsiniz.
+                  <div className='flex gap-2 font-medium leading-none'>
+                    Gider:{" "}
+                    {monthlyExpenseChange === "N/A" ? (
+                      <span>Karşılaştırma yapılacak veri yok.</span>
+                    ) : monthlyExpenseChange === "No data" ? (
+                      <span>{monthlyExpenseChange}</span>
+                    ) : monthlyExpenseChange.startsWith("-") ? (
+                      <>
+                        Giderleriniz {monthlyExpenseChange} azaldı.{" "}
+                        <TrendingDown className='h-4 w-4' />
+                      </>
+                    ) : (
+                      <>
+                        Giderleriniz {monthlyExpenseChange} arttı.{" "}
+                        <TrendingUp className='h-4 w-4' />
+                      </>
+                    )}
                   </div>
-                </CardFooter>
-              </Card>
-            </TabsContent>
-            <TabsContent value='yearly'>
-              <Card className='w-full border-0'>
-                <CardHeader>
-                  <CardTitle>Yıllık Gelir-Gider Grafiği</CardTitle>
-                </CardHeader>
-                <CardContent>
+                </div>
+                <div className='leading-none text-muted-foreground'>
+                  Aylık gelirler ve giderlerini görebilirsiniz.
+                </div>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value='yearly'>
+            <Card className='w-full border-0'>
+              <CardHeader>
+                <CardTitle>Yıllık Gelir-Gider Grafiği</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {!hasData ? (
+                  <div className='flex h-[300px] items-center justify-center text-muted-foreground'>
+                    Henüz hiç bütçe verisi bulunmamaktadır.
+                  </div>
+                ) : (
                   <ChartContainer config={chartConfig}>
                     <BarChart data={yearlyData}>
                       <CartesianGrid vertical={false} />
@@ -295,54 +304,54 @@ export function Charts() {
                       />
                     </BarChart>
                   </ChartContainer>
-                </CardContent>
-                <CardFooter className='flex-col items-start gap-2 text-sm'>
-                  <div className='flex flex-col gap-1'>
-                    <div className='flex gap-2 font-medium leading-none'>
-                      Gelir:{" "}
-                      {yearlyIncomeChange === "N/A" ? (
-                        <span>Karşılaştırma yapılacak veriler yok.</span>
-                      ) : yearlyIncomeChange === "No data" ? (
-                        <span>{yearlyIncomeChange}</span>
-                      ) : yearlyIncomeChange.startsWith("-") ? (
-                        <>
-                          Gelirleriniz {yearlyIncomeChange} azaldı.{" "}
-                          <TrendingDown className='h-4 w-4' />
-                        </>
-                      ) : (
-                        <>
-                          Gelirleriniz {yearlyIncomeChange} arttı.{" "}
-                          <TrendingUp className='h-4 w-4' />
-                        </>
-                      )}
-                    </div>
-                    <div className='flex gap-2 font-medium leading-none'>
-                      Gider:{" "}
-                      {yearlyExpenseChange === "N/A" ? (
-                        <span>Karşılaştırma yapılacak veriler yok.</span>
-                      ) : yearlyExpenseChange === "No data" ? (
-                        <span>{yearlyExpenseChange}</span>
-                      ) : yearlyExpenseChange.startsWith("-") ? (
-                        <>
-                          Giderleriniz {yearlyExpenseChange} azaldı.{" "}
-                          <TrendingDown className='h-4 w-4' />
-                        </>
-                      ) : (
-                        <>
-                          Giderleriniz {yearlyExpenseChange} arttı.{" "}
-                          <TrendingUp className='h-4 w-4' />
-                        </>
-                      )}
-                    </div>
+                )}
+              </CardContent>
+              <CardFooter className='flex-col items-start gap-2 text-sm'>
+                <div className='flex flex-col gap-1'>
+                  <div className='flex gap-2 font-medium leading-none'>
+                    Gelir:{" "}
+                    {yearlyIncomeChange === "N/A" ? (
+                      <span>Karşılaştırma yapılacak veriler yok.</span>
+                    ) : yearlyIncomeChange === "No data" ? (
+                      <span>{yearlyIncomeChange}</span>
+                    ) : yearlyIncomeChange.startsWith("-") ? (
+                      <>
+                        Gelirleriniz {yearlyIncomeChange} azaldı.{" "}
+                        <TrendingDown className='h-4 w-4' />
+                      </>
+                    ) : (
+                      <>
+                        Gelirleriniz {yearlyIncomeChange} arttı.{" "}
+                        <TrendingUp className='h-4 w-4' />
+                      </>
+                    )}
                   </div>
-                  <div className='leading-none text-muted-foreground'>
-                    Yıllık gelirler ve giderlerini görebilirsiniz.
+                  <div className='flex gap-2 font-medium leading-none'>
+                    Gider:{" "}
+                    {yearlyExpenseChange === "N/A" ? (
+                      <span>Karşılaştırma yapılacak veriler yok.</span>
+                    ) : yearlyExpenseChange === "No data" ? (
+                      <span>{yearlyExpenseChange}</span>
+                    ) : yearlyExpenseChange.startsWith("-") ? (
+                      <>
+                        Giderleriniz {yearlyExpenseChange} azaldı.{" "}
+                        <TrendingDown className='h-4 w-4' />
+                      </>
+                    ) : (
+                      <>
+                        Giderleriniz {yearlyExpenseChange} arttı.{" "}
+                        <TrendingUp className='h-4 w-4' />
+                      </>
+                    )}
                   </div>
-                </CardFooter>
-              </Card>
-            </TabsContent>
-          </div>
-        )}
+                </div>
+                <div className='leading-none text-muted-foreground'>
+                  Yıllık gelirler ve giderlerini görebilirsiniz.
+                </div>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );

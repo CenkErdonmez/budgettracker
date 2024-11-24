@@ -10,6 +10,8 @@ import Tables from "@/components/Tables";
 import { Separator } from "@/components/ui/separator";
 import { Suspense } from "react";
 import { ClearDataDialog } from "@/components/ClearDataDialog";
+import { SavingsSuggestions } from "@/components/SavingsSuggestions";
+
 export default function Page() {
   return (
     <SidebarProvider>
@@ -24,6 +26,7 @@ export default function Page() {
         </header>
         <div className='flex flex-col gap-4 p-4'>
           <Cards />
+          <SavingsSuggestions />
           <div className='flex w-full flex-col justify-start items-start gap-4 p-4'>
             <Separator />
             <Suspense fallback={<div>Loading...</div>}>

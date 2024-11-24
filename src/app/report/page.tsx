@@ -22,7 +22,7 @@ function Analysis() {
           </div>
           <ModeToggle />
         </header>
-        <div className='grid gap-2 md:grid-cols-2 p-2 md:p-8 bg:background'>
+        <div className='grid gap-2 md:grid-cols-2 p-2 md:p-4 bg:background'>
           <Charts />
           <DonutCharts />
         </div>
